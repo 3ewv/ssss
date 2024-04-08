@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capture Image from Camera</title>
+    <style>
+        #cameraVideo {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <a href="#" id="captureLink">Capture Image</a>
+    <video id="cameraVideo" autoplay></video>
+    <canvas id="cameraCanvas" style="display: none;"></canvas>
+
+    <script>
+        document.getElementById('captureLink').addEventListener('click', function (event) {
+            event.preventDefault(); // Ngăn chặn hành động mặc định của liên kết
+
+            var video = document.getElementById('cameraVideo');
+            var canvas = document.getElementById('cameraCanvas');
+            var context = canvas.getContext('2d');
+
+            // Sự kiện khi video đã sẵn sàng
+            video.onloadedmetadata = function () {
+                // Thiết lập kích thước canvas để phù hợp với video
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+
+                // Vẽ video lên canvas
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                // Lưu trữ ảnh dưới dạng base64 và hiển thị nó trên thẻ <img>
+                var imageData = canvas.toDataURL('image/png');
+                var img = document.createElement('img');
+                img.src = imageData;
+                document.body.appendChild(img);
+
+                console.log('Image captured:', imageData);
+            };
+
+            // Mở camera khi người dùng nhấn vào liên kết
+            function openCamera() {
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(function (stream) {
+                        // Gán stream vào video element
+                        video.srcObject = stream;
+                    })
+                    .catch(function (err) {
+                        console.error('Lỗi: ' + err);
+                    });
+            }
+
+            // Kích hoạt camera khi người dùng nhấn vào liên kết
+            openCamera();
+        });
+    </script>
+</body>
+
+</html>
